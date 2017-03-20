@@ -5,7 +5,6 @@
  */
 package whigglyGUI;
 
-import javax.swing.JFrame;
 import whiggly.User;
 
 /**
@@ -14,6 +13,6 @@ import whiggly.User;
  */
 public class SetPreferencesSignUp {
     public static void load(User user){
-        JFrame preferences = new JFrame("Preferences");
+        SignUpPersonal.load();
     }
 }

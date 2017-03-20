@@ -48,15 +48,18 @@ public class SignUpPersonal{
         lNameField.setBounds(80, 35, 100, 20);
         String lastName = (String)lNameField.getValue();
         
+        /*
+         * MAJOR TODO:
+         * username label will  not appear, and moves down the lNameLabel
+         * troubleshoot for the problem causer
+         */
+        
         // Pick a username field
         JLabel usernameLabel = new JLabel("Username:");
         lNameLabel.setBounds(5, 60, 70, 20);
         
         JFormattedTextField usernameField = new JFormattedTextField();
         usernameField.setBounds(80, 60, 100, 20);
-        String username = (String)usernameField.getValue();
-        
-         //TODO: confirm availability of username
         
          //Choose a password field
         JLabel passwordLabel = new JLabel("Password:");
@@ -65,32 +68,15 @@ public class SignUpPersonal{
         JPasswordField passwordField = new JPasswordField(10);
         passwordField.setBounds(80, 85, 100, 20);
         
-        
-        
-        
-         //TODO: Validate password, add a password requirements label
+         //TODO: Validate password, add password requirements
          //TODO: Password requirements: 10+ characters, 1+ numbers, 1+ spec. character
         
-         //Confirm password field
+        // Confirm password field
         JLabel passwordConfirmLabel = new JLabel("Confirm password:");
         passwordConfirmLabel.setBounds(5, 110, 70, 20);
         
         JPasswordField passwordConfirmField = new JPasswordField();
         passwordConfirmField.setBounds(80, 110, 100, 20);
-        //
-        passwordField.addActionListener((ActionEvent e) -> {
-            char[] password = passwordField.getPassword();
-            char[] passwordConfirm = passwordConfirmField.getPassword();
-            if (SignUpPersonal.arePasswordsTheSame(password, passwordConfirm)) {
-                JOptionPane.showMessageDialog(getUserInfo,
-                    "Success! You typed the right password.");
-            } else {
-                JOptionPane.showMessageDialog(getUserInfo,
-                    "Invalid password. Try again.",
-                    "Error Message",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
         
         // Submit button
         JButton submit = new JButton("Sign Up");
@@ -98,22 +84,42 @@ public class SignUpPersonal{
         submit.setMnemonic(KeyEvent.VK_S);
         
         submit.addActionListener((ActionEvent e) -> {
+            String username = (String)usernameField.getValue();
+            boolean usernameAvailable;
+            usernameAvailable = MemberData.usernameAvailability(username);
             char[] password = passwordField.getPassword();
-            User newUser = new User(firstName, lastName, username, password);
-            MemberData.addMember(newUser, username);
-            System.out.println(newUser);
-            SetPreferencesSignUp.load(newUser);
-            getUserInfo.dispose();
+            char[] passwordConfirm = passwordConfirmField.getPassword();
+            boolean passwordsSame;
+            passwordsSame = arePasswordsTheSame(password, passwordConfirm);
+            if(passwordsSame && usernameAvailable){
+                User newUser = new User(firstName, lastName, username, password);
+                MemberData.addMember(newUser, username);
+                System.out.println(newUser);
+                SetPreferencesSignUp.load(newUser);
+                getUserInfo.dispose();
+            }else{
+                if(!passwordsSame){
+                    JOptionPane.showMessageDialog(getUserInfo,
+                    "Passwords do not match.",
+                    "Error Message",
+                    JOptionPane.ERROR_MESSAGE);
+                }
+                if(!usernameAvailable){
+                    JOptionPane.showMessageDialog(getUserInfo,
+                    "Username not available",
+                    "Error Message",
+                    JOptionPane.ERROR_MESSAGE);
+                }
+            }
+                
+            
         });
-        
-        
         
         /* TODO:
          * Decide on other personal information that is relevant
          * Create labels and input boxes for this information
          * Either modify User constructor to include any new final info,
          *      or add a new method in User class to set any non-final info
-         * Add a submit/next button
          */
         
         getUserInfo.add(fnameLabel);
@@ -160,6 +166,10 @@ public class SignUpPersonal{
             }
         }
         return same;
+    }
+    
+    private static void isValidPassword(char[] password){
+        
     }
    
 }
